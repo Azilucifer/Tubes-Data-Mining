@@ -1,0 +1,115 @@
+CATATAN REVISI NARASI NOTEBOOK
+
+1. Tambahkan penjelasan konsep sebelum masuk ke model.
+
+Pada bagian sebelum K-Means, tambahkan penjelasan bahwa K-Means merupakan metode unsupervised learning yang digunakan untuk membagi data ke dalam beberapa kelompok berdasarkan kemiripan karakteristik. Dalam penelitian ini, K-Means digunakan karena tujuan utama analisis adalah membentuk segmentasi risiko belajar siswa, bukan memprediksi nilai akademik. Segmentasi dilakukan berdasarkan lima variabel non-nilai, yaitu studytime, failures, absences_capped, higher_num, dan schoolsup_num.
+
+Pada bagian sebelum Logistic Regression, tambahkan penjelasan bahwa Logistic Regression merupakan metode supervised learning untuk klasifikasi. Dalam notebook ini, Logistic Regression tidak digunakan untuk memprediksi nilai akademik asli siswa, tetapi untuk menguji apakah pola cluster hasil K-Means dapat dipelajari kembali oleh model supervised. Target yang digunakan bukan label asli dari dataset, melainkan label cluster yang dihasilkan oleh K-Means.
+
+Pada bagian sebelum Naive Bayes, tambahkan penjelasan bahwa Naive Bayes merupakan metode klasifikasi probabilistik. Model ini digunakan sebagai pembanding Logistic Regression untuk melihat apakah pola cluster dapat dikenali dengan pendekatan probabilistik. Sama seperti Logistic Regression, Naive Bayes tidak ditafsirkan sebagai pembuktian risiko akademik aktual, karena target klasifikasinya berasal dari hasil cluster.
+
+Pada bagian sebelum Regression, tambahkan penjelasan bahwa Linear Regression digunakan sebagai analisis tambahan untuk memprediksi absences_capped. Regression tidak menjadi dasar utama rekomendasi karena tujuan utama proyek adalah segmentasi siswa, bukan prediksi ketidakhadiran. Hasil regression perlu ditafsirkan hati-hati, terutama jika nilai R² rendah.
+
+2. Tambahkan penjelasan “cell ini mau ngapain” pada setiap bagian kode.
+
+Pada cell import library:
+Cell ini bertujuan untuk memanggil seluruh library yang diperlukan dalam proses analisis. Pandas dan NumPy digunakan untuk pengolahan data, Matplotlib dan Seaborn digunakan untuk visualisasi, sedangkan Scikit-learn digunakan untuk standardisasi, clustering, classification, regression, dan evaluasi model. Jika output menampilkan “Library berhasil diimpor”, berarti seluruh library utama sudah dapat digunakan.
+
+Pada cell load dataset:
+Cell ini bertujuan membaca file student-por.csv. Dataset menggunakan delimiter titik koma, sehingga parameter sep=';' harus digunakan agar data tidak terbaca sebagai satu kolom panjang. Output ukuran dataset diperoleh dari df_raw.shape. Berdasarkan hasil pembacaan data, dataset awal berisi 649 baris dan 33 kolom.
+
+Pada cell penghapusan G1, G2, dan G3:
+Cell ini bertujuan menghapus variabel nilai akademik G1, G2, dan G3 dari proses analisis. Penghapusan dilakukan agar segmentasi tidak bergantung pada nilai akademik siswa. Setelah tiga kolom tersebut dihapus, ukuran data berubah dari 649 baris dan 33 kolom menjadi 649 baris dan 30 kolom. Angka ini berasal dari hasil df.shape setelah proses drop columns.
+
+Pada cell data understanding:
+Cell ini bertujuan memeriksa struktur data, tipe data, missing value, dan duplikasi. Hasil pemeriksaan menunjukkan bahwa total missing value adalah 0 dan total duplikasi adalah 0. Angka tersebut diperoleh dari df.isnull().sum().sum() dan df.duplicated().sum(). Artinya, dataset relatif bersih dan tidak memerlukan imputasi besar.
+
+Pada cell statistik deskriptif:
+Cell ini bertujuan melihat nilai minimum, maksimum, rata-rata, standar deviasi, dan kuartil dari variabel numerik. Output diperoleh dari df.describe().T. Statistik deskriptif digunakan untuk memahami rentang nilai data dan mendeteksi kemungkinan nilai ekstrem, terutama pada variabel absences.
+
+Pada cell nilai 0:
+Cell ini bertujuan memeriksa jumlah nilai 0 pada variabel numerik. Nilai 0 tidak langsung dianggap sebagai kesalahan karena pada beberapa variabel nilai tersebut memiliki makna valid. Contohnya, failures = 0 berarti siswa tidak pernah mengalami kegagalan akademik, sedangkan absences = 0 berarti siswa tidak memiliki ketidakhadiran.
+
+Pada cell korelasi:
+Cell ini bertujuan melihat hubungan antarvariabel numerik setelah G1, G2, dan G3 dihapus. Output korelasi diperoleh dari df[numeric_cols].corr(). Heatmap digunakan untuk memudahkan pembacaan hubungan antarvariabel. Korelasi mendekati 1 menunjukkan hubungan positif kuat, mendekati -1 menunjukkan hubungan negatif kuat, dan mendekati 0 menunjukkan hubungan lemah.
+
+Pada cell visualisasi distribusi:
+Cell ini bertujuan melihat sebaran variabel studytime, failures, absences, higher, dan schoolsup. Histogram digunakan untuk variabel numerik, sedangkan bar chart digunakan untuk variabel kategorikal. Visualisasi absences penting karena menunjukkan adanya nilai ketidakhadiran yang relatif tinggi, sehingga variabel ini perlu diperiksa lebih lanjut melalui analisis outlier.
+
+Pada cell encoding:
+Cell ini bertujuan mengubah variabel kategorikal menjadi numerik agar dapat digunakan dalam K-Means. Variabel higher dan schoolsup diubah menjadi higher_num dan schoolsup_num dengan mapping no = 0 dan yes = 1. Encoding diperlukan karena K-Means menghitung jarak antar data, sehingga input model harus berbentuk numerik.
+
+Pada cell analisis outlier:
+Cell ini bertujuan mendeteksi nilai ekstrem menggunakan metode IQR. Hasil perhitungan menunjukkan bahwa studytime memiliki 35 nilai yang terdeteksi sebagai outlier, failures memiliki 100 nilai, dan absences memiliki 21 nilai. Namun, studytime dan failures tidak diubah karena keduanya bersifat ordinal dan memiliki makna kategori. Variabel absences menjadi fokus capping karena nilainya berupa jumlah ketidakhadiran dan dapat memengaruhi perhitungan jarak pada K-Means.
+
+Pada cell capping absences:
+Cell ini bertujuan membatasi nilai ekstrem pada absences menggunakan batas IQR. Berdasarkan perhitungan, Q1 absences = 0, Q3 absences = 6, IQR = 6, lower bound = -9, dan upper bound = 15. Karena absences tidak mungkin bernilai negatif, batas yang paling relevan secara praktis adalah batas atas 15. Setelah capping, nilai absences yang lebih besar dari 15 dibatasi menjadi 15 dan disimpan sebagai absences_capped. Jumlah outlier pada absences_capped menjadi 0.
+
+Pada cell data selection:
+Cell ini bertujuan memilih kombinasi fitur yang paling sesuai untuk clustering. Beberapa kandidat fitur dibandingkan menggunakan silhouette score, Davies-Bouldin Index, dan distribusi cluster. Kombinasi final dipilih bukan hanya karena metrik, tetapi juga karena konsepnya paling sesuai dengan tema risiko belajar dan dukungan akademik siswa.
+
+Pada cell standardisasi:
+Cell ini bertujuan menyamakan skala semua fitur menggunakan StandardScaler. Standardisasi diperlukan karena K-Means sensitif terhadap skala data. Tanpa standardisasi, variabel dengan rentang lebih besar seperti absences_capped dapat mendominasi perhitungan jarak dibandingkan variabel lain.
+
+Pada cell penentuan jumlah cluster:
+Cell ini bertujuan membandingkan nilai k dari 2 sampai 5. Evaluasi dilakukan menggunakan inertia, silhouette score, dan Davies-Bouldin Index. Hasil perhitungan menunjukkan bahwa k=3 menghasilkan silhouette score 0,4928 dan Davies-Bouldin Index 1,0132. Nilai ini menunjukkan keseimbangan terbaik dibandingkan k lainnya, sehingga k=3 dipilih sebagai jumlah cluster final.
+
+Pada cell K-Means final:
+Cell ini bertujuan membentuk cluster akhir dengan n_clusters=3. Hasilnya menunjukkan bahwa cluster 0 berisi 507 siswa, cluster 1 berisi 66 siswa, dan cluster 2 berisi 76 siswa. Jumlah ini diperoleh dari value_counts pada kolom cluster setelah model K-Means dijalankan.
+
+Pada cell evaluasi clustering:
+Cell ini bertujuan menilai kualitas cluster final. Hasil evaluasi menunjukkan silhouette score sebesar 0,4928, Davies-Bouldin Index sebesar 1,0132, dan inertia sebesar 1855,0095. Silhouette score digunakan untuk menilai kekompakan dan pemisahan cluster, Davies-Bouldin Index digunakan untuk menilai jarak antarcluster, sedangkan inertia digunakan untuk melihat total jarak data terhadap centroid cluster.
+
+Pada cell profil cluster:
+Cell ini bertujuan memahami karakteristik masing-masing cluster berdasarkan rata-rata lima fitur final. Cluster 0 memiliki failures rendah, absences_capped relatif rendah, higher_num tinggi, dan schoolsup_num 0, sehingga ditafsirkan sebagai siswa risiko belajar rendah. Cluster 1 memiliki schoolsup_num 1, sehingga ditafsirkan sebagai siswa yang mendapat dukungan akademik sekolah. Cluster 2 memiliki failures dan absences_capped lebih tinggi serta higher_num rendah, sehingga ditafsirkan sebagai siswa risiko belajar tinggi.
+
+Pada cell PCA:
+Cell ini bertujuan memvisualisasikan hasil cluster dalam dua dimensi. PCA mereduksi lima fitur menjadi PC1 dan PC2 agar pola cluster dapat dilihat dalam scatter plot. Hasil explained variance menunjukkan PC1 menjelaskan 31,01% variasi data dan PC2 menjelaskan 20,22%, sehingga total variasi yang ditampilkan dalam grafik adalah 51,23%. Karena PCA hanya menampilkan sebagian variasi data, keputusan cluster tetap harus didasarkan pada metrik evaluasi dan profil cluster, bukan hanya gambar.
+
+Pada cell train-test split classification:
+Cell ini bertujuan membagi data menjadi data training dan testing dengan proporsi 80:20. Stratify digunakan agar proporsi setiap cluster tetap terjaga pada data training dan testing. Fitur yang digunakan adalah lima fitur final, sedangkan target classification adalah label cluster hasil K-Means.
+
+Pada cell evaluasi classification:
+Cell ini bertujuan membandingkan performa Logistic Regression dan Gaussian Naive Bayes. Logistic Regression menghasilkan train accuracy 1,0000 dan test accuracy 1,0000. Gaussian Naive Bayes menghasilkan train accuracy 0,9904 dan test accuracy 0,9923. Hasil ini menunjukkan bahwa pola cluster dapat dipelajari kembali oleh model supervised. Namun, hasil ini tidak boleh ditafsirkan sebagai prediksi risiko akademik aktual, karena targetnya berasal dari label K-Means.
+
+Pada cell confusion matrix:
+Cell ini bertujuan melihat jumlah prediksi benar dan salah pada setiap cluster. Pada Logistic Regression, seluruh data testing diklasifikasikan sesuai label cluster. Pada Gaussian Naive Bayes, terdapat satu data pada cluster 2 yang diprediksi sebagai cluster 0. Confusion matrix membantu melihat kesalahan klasifikasi secara lebih detail dibandingkan hanya membaca accuracy.
+
+Pada cell regression:
+Cell ini bertujuan memprediksi absences_capped menggunakan studytime, failures, higher_num, dan schoolsup_num. Hasil evaluasi menunjukkan Train R² sebesar 0,0283, Test R² sebesar 0,0581, MAE sebesar 3,0057, MSE sebesar 14,4123, dan RMSE sebesar 3,7964. Nilai R² yang rendah menunjukkan bahwa fitur yang digunakan belum mampu menjelaskan variasi ketidakhadiran siswa secara kuat. Karena itu, regression hanya menjadi analisis tambahan.
+
+Pada cell scatter actual vs predicted:
+Cell ini bertujuan membandingkan nilai absences_capped aktual dengan nilai prediksi regression. Garis diagonal menunjukkan prediksi ideal. Jika titik menyebar jauh dari garis diagonal, berarti prediksi model belum akurat. Berdasarkan hasil regression yang memiliki R² rendah, scatter plot kemungkinan menunjukkan sebaran titik yang belum mengikuti garis diagonal secara rapat.
+
+Pada cell model saving:
+Cell ini bertujuan menyimpan hasil analisis dan model agar dapat digunakan kembali pada dashboard Streamlit. File yang disimpan mencakup hasil segmentasi, profil cluster, evaluasi kandidat fitur, evaluasi cluster, evaluasi classification, evaluasi regression, serta model bundle dalam format pkl.
+
+Pada cell dashboard:
+Cell ini bertujuan membuat file app.py untuk dashboard Streamlit. Dashboard digunakan untuk menampilkan prediksi cluster siswa, profil cluster, evaluasi model, dan rekomendasi per cluster. Bagian input absences_capped perlu disesuaikan dengan batas capping, yaitu maksimal 15, agar konsisten dengan data training.
+
+3. Tambahkan catatan batas interpretasi.
+
+Classification tidak boleh dijadikan bukti bahwa model mampu memprediksi risiko akademik asli siswa, karena label target berasal dari K-Means. Regression tidak boleh dijadikan dasar utama rekomendasi, karena nilai R² rendah. Rekomendasi utama harus tetap berbasis profil cluster hasil K-Means.
+
+4. Tambahkan penjelasan visualisasi.
+
+Pada grafik Elbow Method:
+Grafik ini menunjukkan penurunan inertia ketika jumlah cluster bertambah. Penurunan inertia memang wajar terjadi saat k meningkat, tetapi jumlah cluster tidak boleh dipilih hanya berdasarkan inertia. Karena itu, silhouette score dan Davies-Bouldin Index tetap digunakan sebagai pembanding.
+
+Pada grafik Silhouette Score:
+Grafik ini menunjukkan kualitas kekompakan dan pemisahan cluster. Nilai tertinggi diperoleh pada k=3, sehingga k=3 menjadi pilihan yang paling kuat secara metrik.
+
+Pada grafik Davies-Bouldin Index:
+Grafik ini menunjukkan kualitas pemisahan antarcluster. Nilai yang lebih rendah menunjukkan cluster yang lebih baik. Nilai terendah diperoleh pada k=3, sehingga hasil ini mendukung pemilihan tiga cluster.
+
+Pada bar chart distribusi cluster:
+Grafik ini menunjukkan jumlah siswa pada setiap cluster. Cluster 0 menjadi kelompok terbesar dengan 507 siswa, sedangkan cluster 1 dan cluster 2 masing-masing berisi 66 dan 76 siswa. Distribusi ini menunjukkan bahwa mayoritas siswa masuk kelompok risiko belajar rendah, sementara dua kelompok lain merepresentasikan kelompok yang lebih spesifik.
+
+Pada scatter plot PCA:
+Grafik ini menunjukkan posisi data siswa setelah lima fitur direduksi menjadi dua komponen utama. Warna atau label cluster menunjukkan kelompok hasil K-Means. Grafik ini hanya digunakan untuk membantu visualisasi pola, bukan sebagai satu-satunya dasar keputusan model.
+
+Pada confusion matrix:
+Gambar ini menunjukkan perbandingan label cluster aktual dan label cluster prediksi. Nilai diagonal menunjukkan prediksi yang benar, sedangkan nilai di luar diagonal menunjukkan kesalahan prediksi. Logistic Regression menghasilkan prediksi sempurna pada data testing, sedangkan Gaussian Naive Bayes memiliki satu kesalahan prediksi.
+
+Pada scatter actual vs predicted regression:
+Grafik ini menunjukkan perbandingan nilai absences_capped aktual dan prediksi. Garis diagonal adalah kondisi ideal. Karena nilai R² rendah, titik-titik tidak sepenuhnya mengikuti garis diagonal, sehingga kemampuan regression dalam memprediksi absensi masih terbatas.

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Backup file
+*_BACKUP.ipynb
+
+# OS
+Thumbs.db
+.DS_Store
+
+# ZIP (generated)
+*.zip

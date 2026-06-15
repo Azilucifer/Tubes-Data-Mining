@@ -1,0 +1,6 @@
+metrik,nilai,interpretasi
+Train R2,0.028346010313053505,Kemampuan model menjelaskan data training.
+Test R2,0.05811387123294076,Kemampuan model menjelaskan data testing.
+MAE,3.0056729091720236,Rata-rata selisih absolut antara nilai aktual dan prediksi.
+MSE,14.412306825718723,Rata-rata kuadrat error prediksi.
+RMSE,3.7963544125540656,"Akar dari MSE, lebih mudah dibaca karena satuannya sama dengan target."

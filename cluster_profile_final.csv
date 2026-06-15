@@ -1,0 +1,4 @@
+cluster,studytime,failures,absences_capped,higher_num,schoolsup_num,jumlah_siswa,nama_cluster,rekomendasi
+0,1.97,0.118,3.339,1.0,0.0,507,Siswa Risiko Belajar Rendah,"Pertahankan pola belajar, motivasi lanjut pendidikan, dan monitoring ringan."
+1,2.167,0.167,2.924,1.0,1.0,66,Siswa Terdukung Secara Akademik,Lanjutkan dukungan akademik sekolah dan lakukan monitoring berkala agar performa tetap stabil.
+2,1.461,0.961,5.158,0.092,0.026,76,Siswa Risiko Belajar Tinggi,"Prioritaskan intervensi pada absensi, motivasi lanjut pendidikan, dan pendampingan terhadap riwayat kegagalan akademik."

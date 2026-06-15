@@ -1,0 +1,6 @@
+kandidat,fitur,silhouette_score,davies_bouldin_index,distribusi_cluster
+Final: risiko + dukungan sekolah,"studytime, failures, absences_capped, higher_num, schoolsup_num",0.4928,1.0132,"{0: np.int64(507), 1: np.int64(66), 2: np.int64(76)}"
+Inti 4 variabel,"studytime, failures, absences_capped, higher_num",0.3397,1.2869,"{0: np.int64(246), 1: np.int64(326), 2: np.int64(77)}"
+Tambah paid,"studytime, failures, absences_capped, higher_num, paid_num",0.5423,0.9881,"{0: np.int64(72), 1: np.int64(538), 2: np.int64(39)}"
+Tambah internet,"studytime, failures, absences_capped, higher_num, internet_num",0.3916,1.1329,"{0: np.int64(128), 1: np.int64(447), 2: np.int64(74)}"
+Latar keluarga,"Medu, Fedu, studytime, failures, absences_capped",0.2747,1.372,"{0: np.int64(247), 1: np.int64(322), 2: np.int64(80)}"
